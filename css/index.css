@@ -1,0 +1,224 @@
+/* -------------------轮播图展示部分------------------- */
+.banner {
+  position: relative;
+  overflow: hidden;
+}
+
+.banner .images {
+  position: relative;
+  height: 550px;
+  transition: all 500ms ease;
+}
+
+.banner .images .item {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.banner .images .item img {
+  position: relative;
+  left: 50%;
+  transform: translate(-50%);
+
+  width: 1920px;
+  height: 550px;
+}
+
+.banner .control .btn {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto 0;
+  width: 60px;
+  height: 60px;
+  box-sizing: border-box;
+  padding-top: 18px;
+  border-radius: 50%;
+  border: 0px solid black;
+  text-align: center;
+  background: rgba(0, 0, 0, .2);
+  cursor: pointer;
+}
+
+.banner .control .btn:hover {
+  background: rgba(0, 0, 0, .3);
+}
+
+.banner .control .prev {
+  left: 50px;
+}
+
+.banner .control .next {
+  right: 50px;
+}
+
+.banner .control .btn img {
+  width: 24px;
+  height: 24px;
+}
+
+.banner .indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.banner .indicator .item {
+  width: 8px;
+  height: 8px;
+  margin: 0 10px;
+  border-radius: 50%;
+  background-color: #aaa;
+  cursor: pointer;
+}
+
+.banner .indicator .item.active {
+  background-color: red;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* -------------------商品展示部分------------------- */
+.crumbs {
+  height: 63px;
+  line-height: 63px;
+  font-size: 12px;
+}
+
+.crumbs .item {
+  cursor: pointer;
+}
+
+.crumbs .item:last-child {
+  color: #000;
+}
+
+/* -------------------对内容进行筛选操作------------------- */
+.opreation {
+  padding: 0 24px;
+  background-color: #fff;
+}
+
+.opreation .row {
+  display: flex;
+}
+
+.opreation .row .item {
+  width: 104px;
+  height: 48px;
+  color: #000;
+  line-height: 48px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.opreation .row .item.active {
+  color: red;
+}
+
+.opreation .row .item:first-child {
+  color: #666;
+  cursor: auto;
+}
+
+/* -------------------商品列表部分------------------- */
+.products {
+  display: flex;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.products .item {
+  width: 291px;
+  background-color: #fff;
+  margin-bottom: 12px;
+}
+
+.products > .item:hover {
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, .1);
+}
+
+.products > .item.empty {
+  height: 0;
+}
+
+.products .item a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.products .item a .album {
+  width: 180px;
+  height: 180px;
+  margin: 30px 0;
+}
+
+.products .item a .name {
+  font-weight: 700;
+  color: #000;
+}
+
+.products .item a .discount {
+  height: 19px;
+  color: #777;
+  margin: 10px 0 16px;
+}
+
+.products .item a .price {
+  color: #c72f3e;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.products .item .service {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.products .item .service .tip {
+  margin: 0 3px;
+  padding: 0 3px;
+  border: 1px solid #c72f3e;
+  border-radius: 3px;
+  color: #c72f3e;
+  font-size: 12px;
+}
+
+.products .item .commont {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.products .item .commont span{
+  margin: 0 5px;
+  font-size: 12px;
+  color: #555;
+}

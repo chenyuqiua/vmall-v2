@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      var infos = [
+        { name: "kaisa", friend: ["aaa", "bbb"] },
+        { name: "vn", friend: ["bbb", "ccc"] },
+        { name: "php", friend: ["aaa", "bbb", "ccc"] },
+      ];
+
+      var filters = ["ccc", "aaa"];
+
+      var showInfos = infos.filter(function (item) {
+        var friends = item.friend;
+        var isFlag = true;
+        for (filterItem of filters) {
+          if (!friends.includes(filterItem)) {
+            isFlag = false;
+            break;
+          }
+        }
+        return isFlag;
+      });
+      console.log(showInfos);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/common.css" />
+    <link rel="stylesheet" href="./css/index.css" />
+  </head>
+  <body>
+    <!-- 轮播图展示部分 -->
+    <div class="banner">
+      <ul class="images"></ul>
+      <div class="control">
+        <span class="btn prev">
+          <img src="./img/left.svg" alt="" />
+        </span>
+        <span class="btn next">
+          <img src="./img/right.svg" alt="" />
+        </span>
+      </div>
+      <div class="indicator"></div>
+    </div>
+
+    <!-- 商品展示部分 -->
+    <div class="wrapper">
+      <!-- 面包屑导航 -->
+      <div class="crumbs">
+        <span class="item">首页</span>
+        <span>&gt;</span>
+        <span class="item">笔记本</span>
+      </div>
+
+      <!-- 对内容进行筛选操作 -->
+      <div class="opreation">
+        <ul class="row category">
+          <li class="item">分类：</li>
+          <li class="item">笔记本</li>
+          <li class="item">台式机</li>
+          <li class="item">智慧屏</li>
+        </ul>
+        <ul class="row discount">
+          <li class="item">服务优惠：</li>
+          <li class="item">仅看有货</li>
+          <li class="item">分期免息</li>
+          <li class="item">优惠商品</li>
+        </ul>
+        <ul class="row sort">
+          <li class="item">排序：</li>
+          <li class="item active" data-key="default">综合</li>
+          <li class="item" data-key="goodRate">好评</li>
+          <li class="item" data-key="rateCount">评论数</li>
+          <li class="item" data-key="price">价格</li>
+        </ul>
+      </div>
+
+      <!-- 商品列表部分 -->
+      <ul class="products">
+        <!-- <li class="item">
+          <a href="#">
+            <img class="album" src="./img/product_01.webp" alt="" />
+            <div class="name">SDAJKDHLvkdvn</div>
+            <div class="discount">撒复活卡就是复活卡时间</div>
+            <div class="price">￥6499</div>
+            <div class="service">
+              <span class="tip">分期免息</span>
+              <span class="tip">赠送积分</span>
+            </div>
+            <div class="commont">
+              <span>3190评价</span>
+              <span>96%好评</span>
+            </div>
+          </a>
+        </li> -->
+      </ul>
+    </div>
+
+    <!-- 将模拟数据引入 -->
+    <script src="./json/banner_data.js"></script>
+    <script src="./json/peoduct_data.js"></script>
+    <script>
+      // 一、轮播图展示部分
+      // 0.banner的serverURL
+      var bannerServerURL = "https://res.vmallres.com/";
+      var bannersCount = banners.length;
+      var anmitionTime = 500;
+
+      // 1.根据数据 动态添加页面内容
+      // 1.1动态添加轮播图图片数据
+      var imagesEl = document.querySelector(".images");
+      var activeItemEl = null;
+      for (var i = 0; i < banners.length; i++) {
+        // 获取数据
+        var banner = banners[i];
+
+        // 创建li元素
+        var itemEl = document.createElement("li");
+        itemEl.classList.add("item");
+        if (i === 0) {
+          itemEl.classList.add("active");
+          activeItemEl = itemEl;
+        }
+        imagesEl.append(itemEl);
+        // 设置itemEl的样式
+        itemEl.style.left = `${100 * i}%`;
+
+        // 创建img元素
+        var imgEl = document.createElement("img");
+        imgEl.src = `${bannerServerURL}${banner.imgUrl}`;
+        itemEl.append(imgEl);
+      }
+
+      // 追加元素(无限轮播) 在最后和最前面分别追加一个元素
+      var firstItem = imagesEl.children[0].cloneNode(true);
+      var lastItem = imagesEl.children[bannersCount - 1].cloneNode(true);
+      // 将克隆的第一个元素追加到最后
+      imagesEl.append(firstItem);
+      // 将克隆的最后一个元素追加到最前
+      imagesEl.prepend(lastItem);
+      // 位置调整
+      lastItem.style.left = "-100%";
+      firstItem.style.left = `${bannersCount * 100}%`;
+
+      // 1.2动态添加指示器
+      var indicatorEl = document.querySelector(".indicator");
+      for (var i = 0; i < bannersCount; i++) {
+        var intItemEl = document.createElement("div");
+        intItemEl.classList.add("item");
+        if (i === 0) {
+          intItemEl.classList.add("active");
+        }
+        // 监听指示器的点击
+        intItemEl.index = i;
+        intItemEl.onclick = function () {
+          previousIndex = currentIndex;
+          currentIndex = this.index;
+          switchBannerItem();
+        };
+
+        indicatorEl.append(intItemEl);
+      }
+
+      // 2.点击按钮切换轮播图
+      var previousIndex = 0; // 记录前一个图片索引
+      var currentIndex = 0; // 记录当前图片的索引
+      var prevBtnEl = document.querySelector(".prev");
+      var nextBtnEl = document.querySelector(".next");
+      prevBtnEl.onclick = function () {
+        previousIndex = currentIndex;
+        currentIndex--;
+
+        // 调用函数切换active状态
+        switchBannerItem();
+      };
+      nextBtnEl.onclick = nextBannerItem;
+
+      // 3.实现自动轮播功能
+      var timerId = 0;
+      startTimer();
+
+      // 4.手指进入 停止轮播图 离开播放轮播图
+      var bannerEl = document.querySelector(".banner");
+      bannerEl.onmouseenter = stopTimer;
+      bannerEl.onmouseleave = startTimer;
+
+      // 封装函数:切换active状态
+      function switchBannerItem() {
+        // 让currentIndex变成active状态 previousIndex移除active状态
+        // 1.切换整个imagesEl的transform
+        // 恢复动画
+        imagesEl.style.transition = `all ${anmitionTime}ms ease`;
+        imagesEl.style.transform = `translateX(${-currentIndex * 100}%)`;
+
+        if (currentIndex === bannersCount) {
+          currentIndex = 0;
+          fixBannerPosition();
+        } else if (currentIndex < 0) {
+          currentIndex = bannersCount - 1;
+          // 调用位置修正函数
+          fixBannerPosition();
+        }
+
+        // 2.切换指示器的item
+        var currentIntItem = indicatorEl.children[currentIndex];
+        var previousIntItem = indicatorEl.children[previousIndex];
+        previousIntItem.classList.remove("active");
+        currentIntItem.classList.add("active");
+      }
+      // 封装函数: 播放下一个
+      function nextBannerItem() {
+        previousIndex = currentIndex;
+        currentIndex++;
+
+        // 调用函数切换active状态
+        switchBannerItem();
+      }
+
+      // 封装函数:
+      // 开启自动播放轮播图
+      function startTimer() {
+        if (timerId) return;
+        timerId = setInterval(nextBannerItem, 3000);
+      }
+      // 关闭自动播放轮播图
+      function stopTimer() {
+        if (!timerId) return;
+        clearInterval(timerId);
+        timerId = null;
+      }
+
+      // 封装函数:修正位移的位置
+      function fixBannerPosition() {
+        setTimeout(function () {
+          // 将动画取消
+          imagesEl.style.transition = "none";
+          imagesEl.style.transform = `translateX(${-currentIndex * 100}%)`;
+        }, anmitionTime);
+      }
+
+      // 判断文档是否可见 可见是开启定时器, 不可见时关闭定时器
+      document.onvisibilitychange = function () {
+        if (document.visibilityState === "hidden") {
+          stopTimer();
+        } else {
+          startTimer();
+        }
+      };
+
+      // 二、商品列表展示部分
+      // 0.图片资源服务器的地址
+      var baseURL = "https://res.vmallres.com/pimages";
+
+      // 获取元素
+      var productsEl = document.querySelector(".products");
+
+      // 2.服务优惠的筛选
+      var opreationEl = document.querySelector(".opreation");
+      var discountEl = opreationEl.querySelector(".discount");
+
+      var discountFilters = [];
+
+      // 为服务优惠中循环绑定事件
+      for (var i = 1; i < discountEl.children.length; i++) {
+        var discountItem = discountEl.children[i];
+        discountItem.onclick = function () {
+          // 在active和非active中进行切换
+          this.classList.toggle("active");
+
+          // 将当前点击元素的文本去除左右空格 并保存在变量中
+          var fliterItem = this.textContent.trim();
+
+          // 判断数组中 是否有当前点击元素的文本 没有就追加到数组中, 有就删除
+          if (!discountFilters.includes(fliterItem)) {
+            discountFilters.push(fliterItem);
+          } else {
+            // 获取当前点击元素在数组中的索引
+            var filterIndex = discountFilters.findIndex(function (item) {
+              return item === fliterItem;
+            });
+            discountFilters.splice(filterIndex, 1);
+          }
+
+          // 调用函数 过滤resultList
+          filterResultListAction();
+        };
+      }
+
+      // 3.监听排序功能
+      var sortEl = document.querySelector(".sort");
+      var activeItemEl = sortEl.querySelector(".active");
+      for (var i = 1; i < sortEl.children.length; i++) {
+        var sortItemEl = sortEl.children[i];
+
+        sortItemEl.index = i;
+        sortItemEl.onclick = function () {
+          // 排他思想
+          activeItemEl.classList.remove("active");
+          this.classList.add("active");
+          activeItemEl = this;
+
+          // 获取信息
+          var sortKey = this.dataset.key;
+
+          // 根据key对数据做排序
+          sortResultListAction(sortKey);
+        };
+      }
+
+      // 封装函数: 用于过滤resultList的数据
+      var showResultList = [].concat(resultList);
+      function filterResultListAction() {
+        // 过滤数据
+        showResultList = resultList.filter(function (item) {
+          var isFlag = true;
+          for (var fliterItem of discountFilters) {
+            if (!item.services.includes(fliterItem)) {
+              isFlag = false;
+              break;
+            }
+          }
+          return isFlag;
+        });
+
+        // 重新展示数据
+        showResultListAction();
+      }
+
+      // 封装函数:for循环动态展示商品列表
+      showResultListAction();
+      function showResultListAction() {
+        productsEl.innerHTML = "";
+        for (var i = 0; i < showResultList.length; i++) {
+          // 获取一条数据
+          var resultItem = showResultList[i];
+
+          var serviceString = "";
+          for (label of resultItem.promoLabels) {
+            serviceString += `<span class="tip">${label}</span>`;
+          }
+
+          // 创建一个li.item
+          var itemEl = document.createElement("li");
+          itemEl.classList.add("item");
+          itemEl.innerHTML = `
+          <a href="#">
+            <img class="album" src="${baseURL}${resultItem.photoPath}428_428_${resultItem.photoName}" alt="" />
+            <div class="name">${resultItem.name}</div>
+            <div class="discount">${resultItem.promotionInfo}</div>
+            <div class="price">￥${resultItem.price}</div>
+            <div class="service">
+              ${serviceString}
+            </div>
+            <div class="commont">
+              <span>${resultItem.rateCount}人评论</span>
+              <span>${resultItem.goodRate}% 好评</span>
+            </div>
+          </a>
+        `;
+          // 将li添加到ul中
+          productsEl.append(itemEl);
+        }
+
+        // 向ul中添加三个空的li
+        for (var i = 0; i < 3; i++) {
+          var itemEl = document.createElement("li");
+          itemEl.classList.add("item");
+          itemEl.classList.add("empty");
+          productsEl.append(itemEl);
+        }
+      }
+
+      // 封装函数通过key做排序
+      function sortResultListAction(key) {
+        if (key === "default") {
+          filterResultListAction();
+        } else {
+          showResultList.sort(function (item1, item2) {
+            return item2[key] - item1[key];
+          });
+        }
+
+        showResultListAction();
+      }
+    </script>
+  </body>
+</html>
